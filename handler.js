@@ -29,34 +29,26 @@ const Handler = class {
                 .then(result => {
 
                     data.push(result.user_id, result.token)
-                    
+
                     db.Users.findOne({
                         where: {
-                            email: req.body.email,
+                            email: newUser.email
                         },
                         attributes: ['id', 'email']
-                    })
-                    .then(user => {
-
-                        if(user.id !== data.user_id) {
-                            res.status(500).send({
-                                message: 'Fail'
+                    }).then(result => {
+                        if(result.id == data[1] &&  result.email == data[0]) {
+                            return res.status(200).send({
+                                status: 'Success',
+                                data: {
+                                    email: data[0],
+                                    user_id: data[1],
+                                    token: data[2],
+                                }
                             })
                         }
-                        return res.status(200).send({
-                            status: 'Success',
-                            data: {
-                                user_id: data.user_id,
-                                email: data.email,
-                                token: data.token,
-                            }
-                        })
-                    })
-
-                    
+                    })                   
                 })
-        })
-        
+        })       
     }
 
     async submit(req, res) {
@@ -64,18 +56,33 @@ const Handler = class {
             data: req.body.data
         }
 
+        const userData = [];
+
+        db.Users.findOne({
+            where: {
+                email: req.body.email
+            },
+            attributes: ['id', 'email']
+        }).then(result => {
+            userData.push(result.dataValues);
+        })
+
         db.Pre_assessments_submissions.findOne({
             where: {
                 token: req.body.token
             },
             attributes: ['user_id', 'token', 'data']
         }).then(result => {
-            
+
+            if(result.user_id !== userData[0].id) {
+                return res.status(402).send('Token and email does not match!')
+            }
+
             if(result.data !== null) {
                 return res.status(402).send('You have already submitted the assignment')    
             }
-
-            return db.Pre_assessments_submissions.update(data, {
+                    
+            db.Pre_assessments_submissions.update(data, {
                 where: {
                     token: req.body.token
                 },
@@ -86,6 +93,7 @@ const Handler = class {
                     message: 'Assigment submitted',
                 })
             )
+
         })
     };
 
