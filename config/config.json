@@ -1,8 +1,8 @@
 {
   "development": {
-    "username": "root",
-    "password": "root",
-    "database": "pre-assessment-api_development",
+    "username": "miqdad",
+    "password": "anone",
+    "database": "upinipin",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

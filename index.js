@@ -18,7 +18,7 @@ app.use('/', routes)
 //PORT
 const port = process.env.PORT || 3000
 
-db.sequelize.sync({force: true}).then(() => {
+db.sync({force: true}).then(() => {
     app.listen(port, () => {
         console.log(`🚀 Server run on port ${port} 🚀`);
     });
