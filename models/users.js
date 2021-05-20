@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
     tableName: 'Users'
   });
+
+  Users.associate = models => {
+    Users.hasOne(models.Pre_assessments_submissions, {
+      onDelete: 'cascade'
+    })
+  }
   
   return Users;
 };

@@ -97,7 +97,23 @@ const Handler = class {
         })
     };
 
-}
+    async one(req, res) {
+        db.Pre_assessments_submissions.findOne({
+            where: {
+                user_id: req.body.user_id,
+            },
+            attributes: ['user_id', 'token', 'data'],
+            include: [{
+                models: Users,
+                attributes: ['id', 'email']
+            }]
+        })
+        .then(result => {
+            console.log(result)
+            res.send(result);
+        })
+    }
 
+}
 
 module.exports = new Handler;

@@ -2,13 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
   const Pre_assessments_submissions = sequelize.define('Pre_assessments_submissions',{
-    user_id: {
-      type: DataTypes.BIGINT(16),
-      references: {
-        model: 'Users',
-        key: 'id'
-      },
-    },
+    
     token: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -24,6 +18,12 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       tableName: 'Pre_assessments_submissions'
   });
+
+  Pre_assessments_submissions.associate = models => {
+    Pre_assessments_submissions.belongsTo(models.Users, {
+      onDelete: 'cascade'
+    })
+  }
 
   return Pre_assessments_submissions;
 };

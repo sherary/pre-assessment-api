@@ -10,4 +10,6 @@ router.post('/new', Validator.create, Handler.create);
 
 router.put('/submit-assessment', Validator.submit, Handler.submit);
 
+router.get('/one', Handler.one);
+
 module.exports = router;
