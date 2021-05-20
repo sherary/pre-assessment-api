@@ -1,39 +1,23 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('users', {
+  return sequelize.define('preassessment_backend_submissions', {
     id: {
       autoIncrement: true,
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
     },
-    name: {
+    user_id: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
+    token: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    email: {
-      type: DataTypes.STRING(255),
+    data: {
+      type: DataTypes.JSON,
       allowNull: false
-    },
-    email_verified_at: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    remember_token: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    profile_photo_path: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    status: {
-      type: DataTypes.TINYINT,
-      allowNull: true
     },
     created_at: {
       type: DataTypes.DATE,
@@ -45,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'users',
+    tableName: 'preassessment_backend_submissions',
     timestamps: false,
     indexes: [
       {

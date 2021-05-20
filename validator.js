@@ -16,7 +16,7 @@ module.exports =  {
                 message: 'Email cannot be empty'
             })
         } else {
-            db.Users.findOne({
+            db.model('users').findOne({
                 where: {
                     email: req.body.email
                 }
@@ -36,7 +36,7 @@ module.exports =  {
     submit: [
 
         check('email').isEmail().isLength({ min: 8, max: 32}).custom(value => {
-            return db.Users.findOne({
+            return db.model('users').findOne({
                 where: {
                     email: value
                 },
