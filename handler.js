@@ -3,7 +3,7 @@ const {nanoid} = require('nanoid');
 
 const Handler = class {
     async all(req, res) {
-        db.Pre_assessments_submissions.findAll()
+        db.preassessment_backend_submissions.findAll()
             .then(users => res.send(users))
     }
 
@@ -16,13 +16,13 @@ const Handler = class {
             email: req.body.email,
         }
 
-        db.Users.create(newUser)
+        db.model('users').create(newUser)
             .then(result => {
                 const id = result.id;
 
                 data.push(newUser.email)
 
-                db.Pre_assessments_submissions.create({
+                db.model('preassessment_backend_submissions').create({
                     user_id: id,
                     token: token
                 })
@@ -30,7 +30,7 @@ const Handler = class {
 
                     data.push(result.user_id, result.token)
 
-                    db.Users.findOne({
+                    db.model('users').findOne({
                         where: {
                             email: newUser.email
                         },
@@ -58,7 +58,7 @@ const Handler = class {
 
         const userData = [];
 
-        db.Users.findOne({
+        db.model('users').findOne({
             where: {
                 email: req.body.email
             },
@@ -67,7 +67,7 @@ const Handler = class {
             userData.push(result.dataValues);
         })
 
-        db.Pre_assessments_submissions.findOne({
+        db.model('preassessment_backend_submissions').findOne({
             where: {
                 token: req.body.token
             },
@@ -82,7 +82,7 @@ const Handler = class {
                 return res.status(402).send('You have already submitted the assignment')    
             }
                     
-            db.Pre_assessments_submissions.update(data, {
+            db.model('preassessment_backend_submissions').update(data, {
                 where: {
                     token: req.body.token
                 },
