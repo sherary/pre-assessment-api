@@ -6,6 +6,8 @@ function initModels(sequelize) {
   var preassessment_backend_submissions = _preassessment_backend_submissions(sequelize, DataTypes);
   var users = _users(sequelize, DataTypes);
 
+  preassessment_backend_submissions.belongsTo(users, { as: "user", foreignKey: "user_id"});
+  users.hasMany(preassessment_backend_submissions, { as: "preassessment_backend_submissions", foreignKey: "user_id"});
 
   return {
     preassessment_backend_submissions,
