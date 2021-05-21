@@ -35,11 +35,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: true
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: true
     }

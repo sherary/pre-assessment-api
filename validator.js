@@ -71,7 +71,7 @@ const checkAddUser = async (req, res, next) => {
     }
 }
 
-const checkSubmission = async (req, res) => {
+const checkSubmission = async (req, res, next) => {
     const schema = Joi.object().keys({
         email: Joi.string()
                 .trim()
@@ -125,7 +125,7 @@ const checkSubmission = async (req, res) => {
             token: req.body.token,
         });
 
-        return res.status(200).send('OK');
+        next();
 
     } catch (error) {
         return res.status(402).send({

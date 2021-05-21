@@ -3,20 +3,24 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('preAssessmentBackendSubmissions', {
       
+      user_id: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
       token: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       data: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       createdAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       }
     });

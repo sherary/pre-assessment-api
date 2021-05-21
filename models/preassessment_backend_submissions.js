@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('preassessment_backend_submissions', {
+  return sequelize.define('preAssessmentBackendSubmissions', {
     id: {
       autoIncrement: true,
       type: DataTypes.BIGINT,
@@ -23,17 +23,17 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.JSON,
       allowNull: true
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'preassessment_backend_submissions',
+    tableName: 'preAssessmentBackendSubmissions',
     timestamps: false,
     indexes: [
       {

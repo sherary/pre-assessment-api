@@ -3,7 +3,7 @@ const {nanoid} = require('nanoid');
 
 const Handler = class {
     async all(req, res) {
-        db.preassessment_backend_submissions.findAll()
+        db.model('preassessment_backend_submissions').findAll()
             .then(users => res.send(users))
     }
 
@@ -19,8 +19,19 @@ const Handler = class {
         const createUser = () => {
             db.model('users').create(newUser)
                 .then(result => {
-                    console.log(result)
-                    res.send(result);
+                    data.push(result.dataValues);
+
+                    db.model('preAssessmentBackendSubmissions').create({
+                        user_id: data[0].id,
+                        token: token,
+                    })
+                        .then(result => {
+                            data[0].token = result.token
+                            return res.status(200).json({
+                                status: 'Success',
+                                data: data,
+                            })
+                        })
                 })
         }
 
@@ -31,48 +42,13 @@ const Handler = class {
             attributes: ['id', 'name', 'email']
         })
         .then(result => {
+
             if(result === null) {
                 createUser();
             } else {
                 return res.status(402).send('Email already listed!')
             }
-        })
-
-        
-
-        // db.model('users').create(newUser)
-        //     .then(result => {
-        //         const id = result.id;
-
-        //         data.push(newUser.email)
-
-        //         db.model('preassessment_backend_submissions').create({
-        //             user_id: id,
-        //             token: token
-        //         })
-        //         .then(result => {
-
-        //             data.push(result.user_id, result.token)
-
-        //             db.model('users').findOne({
-        //                 where: {
-        //                     email: newUser.email
-        //                 },
-        //                 attributes: ['id', 'email']
-        //             }).then(result => {
-        //                 if(result.id == data[1] &&  result.email == data[0]) {
-        //                     return res.status(200).send({
-        //                         status: 'Success',
-        //                         data: {
-        //                             email: data[0],
-        //                             user_id: data[1],
-        //                             token: data[2],
-        //                         }
-        //                     })
-        //                 }
-        //             })                   
-        //         })
-        // })       
+        })       
     }
 
     async submit(req, res) {
