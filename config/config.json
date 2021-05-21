@@ -1,22 +1,22 @@
 {
   "development": {
-    "username": "miqdad",
-    "password": "anone",
-    "database": "upinipin",
+    "username": "root",
+    "password": "root",
+    "database": "preAssessment_development",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
     "password": "root",
-    "database": "pre-assessment-api_test",
+    "database": "preAssessment_test",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": "root",
-    "database": "pre-assessment-api_production",
+    "database": "preAssessment_production",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }

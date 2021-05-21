@@ -1,76 +1,138 @@
-const { check, validationResult, matchedData, sanitize } = require('express-validator');
+const Joi = require('joi');
 const db = require('./models');
 
-module.exports =  {
-    create: [
-        check('name').isLength({ min: 8, max: 32}),
-        check('email').isEmail().isLength({ min: 8, max: 32 }),
-        (req, res, next) => {
+const checkAddUser = async (req, res, next) => {
+    const schema = Joi.object().keys({
 
-        if(!req.body.name) {
-            res.status(402).send({
-                message: 'Name cannot be empty'
-            })
-        } else if (!req.body.email) {
-            res.status(402).send({
-                message: 'Email cannot be empty'
-            })
-        } else {
-            db.model('users').findOne({
-                where: {
-                    email: req.body.email
+        //validating name
+        name: Joi.string()
+                .trim()
+                .min(8)
+                .max(32)
+                .required()
+                .error(errors =>  {
+            errors.forEach(err => {
+                switch(err.code) {
+                    case 'any.empty':
+                        err.message = 'Name cannot be empty';
+                        break;
+                    case 'string.min':
+                        err.message = `Name should have at least ${err.local.limit} characters`;
+                        break;
+                    case 'string.max':
+                        err.message = `Name should have maximum ${err.local.limit} characters`;
+                        break;
+                    default:
+                        break;
                 }
-            })
-            .then(user => {
-                if(user) {
-                    res.status(402).send({
-                        message: 'Email already listed'
-                    })
-                } else {
-                    next();
-                }
-            }
-        )}}
-    ],
-
-    submit: [
-
-        check('email').isEmail().isLength({ min: 8, max: 32}).custom(value => {
-            return db.model('users').findOne({
-                where: {
-                    email: value
-                },
-            })
-            .then(e => {
-                
-                if(!e) {
-                    throw new Error('Email is not listed!, please register!');
-                }
-            })
+            });
+            return errors;
         }),
-        check('token').isString().isLength({ min: 16, max: 16}).custom(value => {
-            return db.Pre_assessments_submissions.findOne({
-                where: {
-                    token: value
-                },
-            })
-            .then(t => {
 
-                if(!t) {
-                    throw new Error('Token does not exist!')
-                }
-            })
-        }),
-        check('data').isLength({ min: 8 }),
-        (req, res, next) => {
+        //validating email
+        email: Joi.string()
+                .trim()
+                .min(10)
+                .max(80)
+                .email({ 
+                    minDomainSegments: 2,
+                    tlds: {
+                        allow: ['com', 'net']
+                    }
+                })
+                .required()
+                .error(errors => {
             
-            const errors = validationResult(req);
-            if(!errors.isEmpty()) {
-                return res.status(422).json({
-                    errors: errors.mapped()
-                });
-            }
-            next();
-        }
-    ],
+                    errors.forEach(err => {
+                        if(err.code === 'any.required') {
+                            err.message = 'Email cannot be empty'
+                        }
+
+                    });
+                    return errors;
+                })
+    })
+    
+    try {
+        const value = await schema.validateAsync({
+            name: req.body.name, 
+            email: req.body.email,
+        })
+
+        next();
+
+    } catch (error) {
+
+        return res.status(402).send({
+            status: 'Fail',
+            message: error.message,
+            data: error._original
+        });
+    }
 }
+
+const checkSubmission = async (req, res) => {
+    const schema = Joi.object().keys({
+        email: Joi.string()
+                .trim()
+                .min(10)
+                .max(80)
+                .email({ 
+                    minDomainSegments: 2,
+                    tlds: {
+                        allow: ['com', 'net']
+                    }
+                })
+                .required()
+                .error(errors => {
+            
+                    errors.forEach(err => {
+                        if(err.code === 'any.required') {
+                            err.message = 'Email cannot be empty'
+                        }
+
+                    });
+                    return errors;
+                }),
+
+        token: Joi.string()
+                .trim()
+                .min(16)
+                .max(16)
+                .required()
+                .error(errors => {
+                    
+                    errors.forEach(err => {
+                        switch (err.code) {
+                            case 'any.required':
+                                err.message = 'Token cannot be empty';
+                                break;
+                            case 'string.min':
+                            case 'string.max':
+                                err.message = 'Token must be 16 characters!';
+                                break;
+                            default: 
+                                break;
+                        }
+                    });
+                    return errors;
+                }),   
+    });
+
+    try {
+        const value = await schema.validateAsync({
+            email: req.body.email,
+            token: req.body.token,
+        });
+
+        return res.status(200).send('OK');
+
+    } catch (error) {
+        return res.status(402).send({
+            status: 'Fail',
+            message: error.message,
+            data: error._original
+        });
+    }
+}
+module.exports =  { checkAddUser, checkSubmission };

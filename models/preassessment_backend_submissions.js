@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     data: {
       type: DataTypes.JSON,
-      allowNull: false
+      allowNull: true
     },
     created_at: {
       type: DataTypes.DATE,
