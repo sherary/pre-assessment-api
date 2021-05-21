@@ -18,7 +18,7 @@ app.use('/', routes)
 //PORT
 const port = process.env.PORT || 3000
 
-db.sync({force: true}).then(() => {
+db.authenticate().then(() => {
     app.listen(port, () => {
         console.log(`🚀 Server run on port ${port} 🚀`);
     });

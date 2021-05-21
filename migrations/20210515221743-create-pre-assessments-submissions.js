@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Pre_assessments_submissions', {
+    await queryInterface.createTable('preAssessmentBackendSubmissions', {
       
       token: {
         type: Sequelize.STRING,
@@ -22,6 +22,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Pre_assessments_submissions');
+    await queryInterface.dropTable('preAssessmentBackendSubmissions');
   }
 };
