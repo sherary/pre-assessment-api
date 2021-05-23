@@ -2,9 +2,32 @@ const db = require('./models');
 const {nanoid} = require('nanoid');
 
 const Handler = class {
-    async all(req, res) {
-        db.model('preassessment_backend_submissions').findAll()
-            .then(users => res.send(users))
+
+    async one(req, res) {
+        await db.model('users').findOne({
+            where: {
+                email: req.params.email
+            },
+            include: [{
+                model: db.model('preAssessmentBackendSubmissions'),
+                as: 'preassessment_backend_submissions',
+                attributes: ['user_id', 'token', 'data'],
+            }],
+            attributes: ['id', 'email'],
+            raw: true,
+        })
+        .then(result => {
+            
+            return res.status(200).json({
+                status: 'Success',
+                data: {
+                    user_id: result["preassessment_backend_submissions.user_id"],
+                    email: result.email,
+                    token: result["preassessment_backend_submissions.token"],
+                    submitted_assessment: result["preassessment_backend_submissions.data"],
+                }
+            })
+        })
     }
 
     async create(req, res) {
@@ -35,18 +58,32 @@ const Handler = class {
                 })
         }
 
-        db.model('users').findOne({
+        await db.model('users').findOne({
             where: {
                 email: newUser.email,
             },
-            attributes: ['id', 'name', 'email']
+            attributes: ['id', 'name', 'email'],
+            raw: true
         })
         .then(result => {
-
+            
             if(result === null) {
                 createUser();
             } else {
-                return res.status(402).send('Email already listed!')
+                db.model('preAssessmentBackendSubmissions').findOne({
+                    where: {
+                        user_id: result.id
+                    },
+                    attributes: ['id', 'token'],
+                    raw: true
+                })
+                .then(result => {
+
+                    return res.status(402).send({
+                        message: 'Email already listed!',
+                        data: result
+                    })
+                })
             }
         })       
     }
@@ -56,64 +93,48 @@ const Handler = class {
             data: req.body.data
         }
 
-        const userData = [];
-
-        db.model('users').findOne({
-            where: {
-                email: req.body.email
-            },
-            attributes: ['id', 'email']
-        }).then(result => {
-            userData.push(result.dataValues);
-        })
-
-        db.model('preassessment_backend_submissions').findOne({
-            where: {
-                token: req.body.token
-            },
-            attributes: ['user_id', 'token', 'data']
+        await db.model('users').findOne({
+            attributes: ['id', 'email'],
+            include: 
+                [{
+                    model: db.model('preAssessmentBackendSubmissions'),
+                    as: 'preassessment_backend_submissions',
+                    attributes: ['user_id', 'token', 'data'],
+                    where: {
+                        token: req.body.token
+                    }
+                }],
+            raw: true,
         }).then(result => {
 
-            if(result.user_id !== userData[0].id) {
-                return res.status(402).send('Token and email does not match!')
+            if(req.body.email !== result.email) {
+                return res.status(400).send('Email and token does not match');
             }
-
-            if(result.data !== null) {
-                return res.status(402).send('You have already submitted the assignment')    
-            }
-                    
-            db.model('preassessment_backend_submissions').update(data, {
-                where: {
-                    token: req.body.token
-                },
-                attributes: ['data']
-            }).then(
-                res.status(200).json({
-                    status: 'Success',
-                    message: 'Assigment submitted',
+            
+            if(result['preassessment_backend_submissions.data'] === null) {
+                db.model('preAssessmentBackendSubmissions').update(data, {
+                    where: {
+                        token: req.body.token
+                    },
+                    attributes: ['data'],
                 })
-            )
+                .then(result => {
 
+                    return res.status(200).json({
+                        status: 'Success',
+                        message: 'Assignment updated!',
+                    })
+                })
+            } else {
+                return res.status(400).send('You have already submitted the assignment before!')
+            }
+        }).catch(error => {
+            console.error(error)
+
+            return res.status(500).send('Internal Error');
         })
+
     };
-
-    async one(req, res) {
-        db.Pre_assessments_submissions.findOne({
-            where: {
-                user_id: req.body.user_id,
-            },
-            attributes: ['user_id', 'token', 'data'],
-            include: [{
-                models: Users,
-                attributes: ['id', 'email']
-            }]
-        })
-        .then(result => {
-            console.log(result)
-            res.send(result);
-        })
-    }
-
 }
 
 module.exports = new Handler;

@@ -6,8 +6,8 @@ const Validator = require('./validator');
 
 router.post('/new', Validator.checkAddUser, Handler.create);
 
-router.put('/submit-assessment', Validator.checkSubmission);
+router.put('/submit-assessment', Validator.checkSubmission, Handler.submit);
 
-// router.get('/one', Handler.one);
+router.get('/one/:email', Handler.one);
 
 module.exports = router;
