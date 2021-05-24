@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const db = require('./models');
+const db = require('../models');
 
 const checkAddUser = async (req, res, next) => {
     const schema = Joi.object().keys({

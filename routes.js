@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./models');
-const Handler = require('./handler');
-const Validator = require('./validator');
+const Handler = require('./src/handler');
+const Validator = require('./src/validator');
 
 router.post('/new', Validator.checkAddUser, Handler.create);
 
