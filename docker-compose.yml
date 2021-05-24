@@ -1,0 +1,15 @@
+version: '3'
+services: 
+    web:
+        image: node:14.4.0-slim
+        ports: "3000"
+        environment: preAssessment_development
+    db:
+        image: mysql
+        ports:
+            - "3306:3306"
+        environment: 
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root 
+            - MYSQL_PASSWORD=roots
+            - MYSQL_DATABASE=preAssessment_development
